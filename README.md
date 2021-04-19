@@ -3,6 +3,11 @@
 ### Description
 This application provides basic gateway functionality between LoRa devices and MQTT broker. **LoRaMQTTGateway** is written for MicroPython running on ESP8266 or ESP32 boards. It uses Mauro Riva's module *sx127x.py* from his **uPyLoRaWAN** repository (https://github.com/lemariva/uPyLoRaWAN). The application has been tested on NodeMCU module (ESP8266), and Heltec's WiFi LoRa 32 module with OLED display (ESP32). For OLED display, old Adafruit's module *ssd1306.py* has been used (https://github.com/adafruit/micropython-adafruit-ssd1306).
 
+### Motivation
+LoRaWAN is surely a large-scale solution for integrating wireless devices into an IoT application. That made LoRaWAN infractructure too large and too complex for smaller applications, with relatively small number of wireless devices (less than a hundred). LoRaMQTTGateway is intended for such applications (such as smart home or similar). Since it exposes a widely-used MQTT to wireless devices, its integration into other existing systems should be very easy. 
+
+Currently, no data encryption is used, having in mind that in most such cases data traffic is closed in a local network. Nevertheless, data encryption is one of the first features to be added to the LoRaMQTTGateway.
+
 ### LoRa messages and MQTT messages
 
 **LoRaMQTTGateway** connects to a MQTT broker and subcribes topic defined as *gw_topic/gw_id* from fields in a file *config.py*, and all its subtopics. 
