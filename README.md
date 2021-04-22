@@ -22,7 +22,7 @@ LoRa device sends a message as JSON string:
 
 The *topic_defined_by_device* can also be hierarchical.
 
-**LoRaMQTTGateway** appends the received topic to the predefined *gw_topic/gw_id* and forwards the received message as plain string. Since the gateway subscribes to *gw_topic/gw_id/#*, the forwarded message will be bounced back to LoRa as JSON string, but this time with full topic *gw_topic/gw_id/topic_defined_by_device*. This serves for two purposes:
+**LoRaMQTTGateway** appends the received topic to the predefined *gw_topic/gw_id* and forwards the received message as plain string. Since the gateway subscribes to *gw_topic/gw_id/#*, the forwarded message will be bounced back to LoRa as JSON string, but this time with topic *gw_id/topic_defined_by_device*. This serves for two purposes:
 - eventually implementing retransmission from device, in case that the message hasn't been received,
 - enabling the device to determine which gateway(s) forwarded message.
 
