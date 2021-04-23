@@ -11,7 +11,7 @@ All the necessary parameters can be configured in the file *config.py*:
 - parameters for LoRa can be configured in *lora_config*,
 - SPI connection to SX127x module can be configured in *device_config*.
 
-The LoRaMQTTDevice sends a string message to a topic *dev_topic/dev_period*.
+The LoRaMQTTDevice sends a string message to a topic *dev_topic/dev_id*.
 
 All parameters are self-explanatory, and some are additionaly commented in the file *config.py*.
 
