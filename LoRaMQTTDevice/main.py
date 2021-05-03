@@ -5,6 +5,7 @@ from sx127x import SX127x
 if module_config['has_oled']==1:
     from ssd1306 import SSD1306_I2C
 import machine
+import ujson
 
 # Device version
 DEV_VER=0.1
@@ -13,6 +14,8 @@ DEV_VER=0.1
 ENCODING='latin2'
 
 counter=0
+
+gw_beacon=0
 
 # Watchdog timer initialization
 wdt = WDT()
@@ -67,7 +70,7 @@ wdt.feed()
 
 # Sending to LoRa
 def send(lora,topic,message):
-    payload = '{"topic":"'+topic+'", "msg":"'+message+'"}'
+    payload = '{"topic":"'+topic+'", "msg":'+message+'}'
     print("To LoRa -->  {}".format(payload))
     if module_config['has_oled']==1:
         oled.fill(0)
@@ -91,7 +94,7 @@ def send(lora,topic,message):
 
 # Receiving from LoRa
 def receive(lora):
-    
+    global xmit_delay
     if lora.received_packet():
         lora.blink_led()
         payload = lora.read_payload()
@@ -107,41 +110,81 @@ def receive(lora):
                 oled.text(y,0,pos)
                 pos+=10
             oled.show()
-        return payload.decode(ENCODING)
+        return payload
     else:
-        return ""
+        return ''
 
 last_xmit=time.time()
 
 # Preparing data to be sent
-# This function should collect data from sensor(s) and prepare message as string
 def get_data():
     global counter
     counter+=1
-    msg=dev_config['dev_id']+': '+str(counter)
+    msg='"'+dev_config['dev_id']+': '+str(counter)+'"'
+#    msg='{"field":"value", "counter":'+str(counter)+'}'
     return msg
 
 # Main loop
 while True:
-    # Checking for LoRa packets
-    try:
-        received_msg=receive(lora)
-    except:
-        print("Receiving from LoRa failed.")
-        if module_config['has_oled']==1:
-            oled.fill(0)
-            oled.text("RX from LoRa failed.",0,0)
-            oled.show()
-
-    wdt.feed()
-
-    # Sending LoRa message
-    current_time=time.time()
-    if current_time-last_xmit>=dev_config['xmit_period']:
-        msg=get_data()
-        topic=dev_config['dev_topic']+'/'+dev_config['dev_id']
-        send(lora,topic,msg)
+    if dev_config['xmit_slot']>0:
+        # Sending LoRa message
+        current_time=time.time()
+        if current_time-last_xmit>=dev_config['xmit_period']:
+            print("Waiting for gateway beacon.")
+            msg=get_data()
+            topic=dev_config['dev_topic']+'/'+dev_config['dev_id']
+            while gw_beacon==0:
+                # Checking for LoRa packets
+                try:
+                    payload=receive(lora)
+                    try:
+                        parsed=ujson.loads(payload)
+                        if parsed['gateway']==dev_config['xmit_gw']:
+                            gw_beacon=1
+                            print("Gateway beacon received.")
+                    except:
+                        pass        
+                except:
+                    print("Receiving from LoRa failed.")
+                    if module_config['has_oled']==1:
+                        oled.fill(0)
+                        oled.text("RX from LoRa failed.",0,0)
+                        oled.show()
+                wdt.feed()
+            print("Waiting for slot "+str(dev_config['xmit_slot']))
+            for k in range(dev_config['xmit_slot']):
+                time.sleep(1)
+                wdt.feed()
+            send(lora,topic,msg)
+            last_xmit=time.time()
+            gw_beacon=0
         wdt.feed()
-        last_xmit=current_time        
-
-    wdt.feed()
+        # Checking for LoRa response packets
+        try:
+            payload=receive(lora)
+        except:
+            print("Receiving from LoRa failed.")
+            if module_config['has_oled']==1:
+                oled.fill(0)
+                oled.text("RX from LoRa failed.",0,0)
+                oled.show()
+        wdt.feed()
+    else:
+        # Checking for LoRa packets
+        try:
+            payload=receive(lora)
+        except:
+            print("Receiving from LoRa failed.")
+            if module_config['has_oled']==1:
+                oled.fill(0)
+                oled.text("RX from LoRa failed.",0,0)
+                oled.show()
+        wdt.feed()        
+        # Sending LoRa message
+        current_time=time.time()
+        if current_time-last_xmit>=dev_config['xmit_period']:
+            msg=get_data()
+            topic=dev_config['dev_topic']+'/'+dev_config['dev_id']
+            send(lora,topic,msg)
+            last_xmit=current_time
+            wdt.feed()
