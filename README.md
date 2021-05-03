@@ -44,7 +44,7 @@ If a root topic is blacklisted for MQTT, the message will not be forwareded to t
 
 If a root topic is blacklisted for LoRa, the message will not be forwarded to LoRa. This can be used, among others, to prevent bouncing back to LoRa devices those messages, which have been forwarded to the broker.
 
-If local root topic is defined, such messages will not be forwarded to the broker, but retransmitted to LoRa. In this way, the LoRaMQTTGateway can be used as relay between LoRa devices in certain area.
+If local root topic is defined, such messages will not be forwarded to the broker, but retransmitted to LoRa. In this way, the *LoRaMQTTGateway* can be used as relay between LoRa devices in certain area.
 
 ### Configuration
 
