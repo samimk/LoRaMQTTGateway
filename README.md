@@ -36,7 +36,15 @@ Message received from MQTT broker is transmitted to LoRa as JSON string:
 
 The *topic_for_LoRa* is formed as the topic of the message received from MQTT broker, without the root *gw_topic*. The *string_containing_message_from_MQTT_broker* can also be formatted using JSON.
 
-Additionally, the application can be configured to send a beacon to LoRa periodically. The beacon message contains timestamp and *gw_id*.
+The application can be configured to send a beacon to LoRa periodically. The beacon message contains timestamp and *gw_id*. This beacon can be used by devices to determine a time slot after reception of beacon in which a message should be transmitted (see implementation of LoRaMQTTDevice).
+
+Additionally, blacklists of root topics for MQTT and for LoRa can be specified in config.py. 
+
+If a root topic is blacklisted for MQTT, the message will not be forwareded to the broker. This can be used, among others, to prevent forwarding other gateway's LoRa messages (if multiple gateways exist).
+
+If a root topic is blacklisted for LoRa, the message will not be forwarded to LoRa. This can be used, among others, to prevent bouncing back to LoRa devices those messages, which have been forwarded to the broker.
+
+If local root topic is defined, such messages will not be forwarded to the broker, but retransmitted to LoRa. In this way, the LoRaMQTTGateway can be used as relay between LoRa devices in certain area.
 
 ### Configuration
 
@@ -44,6 +52,7 @@ All the necessary parameters can be configured in the file *config.py*:
 - WiFi connection can be configured in *wifi_config* (DHCP or static IP address can be used),
 - MQTT broker connection can be configured in *mqtt_config*,
 - *gw_topic*, *gw_id* and beacon interval can be configured in *gw_config*,
+- *no_mqtt* topics, *no_lora* topics and *local* topic can be configured in *gw_config*,
 - module type and presence of OLED display can be configured in *module_config*,
 - parameters for LoRa can be configured in *lora_config*,
 - SPI connection to SX127x module can be configured in *device_config*.
