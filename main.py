@@ -32,13 +32,12 @@ import gc
 TZ=2
 
 # Gateway version
-GW_VER=0.5
+GW_VER=0.6
 
 # Encoding used
 ENCODING='latin2'
 
 # Logfile - logging module not used due to memory limitations on ESP8266
-# Uncoment where necessary to get detailed logging
 log = open("loragateway.log","a")
 
 nic = network.WLAN(network.STA_IF)
@@ -138,6 +137,11 @@ def sub_cb(topic,msg):
 #    logentry=str(msg)
 #    logtime=time.localtime()
 #    log.write("{}.{}.{} {}:{}:{} - {}\n".format(logtime[2],logtime[1],logtime[0],logtime[3]+TZ,logtime[4],logtime[5],logentry))
+    if str(topic).split('/')[1] in gw_config['no_lora']:
+#         logentry="Root topic {} in blacklist.\n".format(str(topic).split('/')[0])
+#         logtime=time.localtime()
+#         log.write("{}.{}.{} {}:{}:{} - {}\n".format(logtime[2],logtime[1],logtime[0],logtime[3]+TZ,logtime[4],logtime[5],logentry))
+        return
     send(lora,topic.decode(ENCODING),msg.decode(ENCODING))
 #    logentry="Message sent to LoRa."
 #    logtime=time.localtime()
@@ -225,6 +229,18 @@ def receive(lora):
             oled.show()
         parsed=ujson.loads(payload)
         if len(parsed['topic'].split('/'))>=2:
+            if parsed['topic'].split('/')[0] in gw_config['no_mqtt']:
+#                logentry="Root topic {} in blacklist.\n".format(parsed['topic'].split('/')[0])
+#                logtime=time.localtime()
+#                log.write("{}.{}.{} {}:{}:{} - {}\n".format(logtime[2],logtime[1],logtime[0],logtime[3]+TZ,logtime[4],logtime[5],logentry))
+                return
+            if len(gw_config['local'])>0 and parsed['topic'].split('/')[0] == gw_config['local']:
+#                logentry="Root topic {} retransmitted locally.\n".format(parsed['topic'].split('/')[0])
+#                logtime=time.localtime()
+#                log.write("{}.{}.{} {}:{}:{} - {}\n".format(logtime[2],logtime[1],logtime[0],logtime[3]+TZ,logtime[4],logtime[5],logentry))
+                print('Retransmitting locally.')
+                send(lora,parsed['topic'],parsed['msg'])
+                return
             parsed_topic=bytes(gw_config['gw_topic']+'/'+gw_config['gw_id']+'/'+parsed['topic'], ENCODING)
             parsed_msg=bytes(parsed['msg'], ENCODING)
             c.publish(parsed_topic, parsed_msg)
@@ -233,7 +249,7 @@ def receive(lora):
 def send_beacon():
     global lora, oled, TZ
     beacontime=time.localtime()
-    payload="{}.{}.{} {}:{}:{} - {}".format(beacontime[2],beacontime[1],beacontime[0],beacontime[3]+TZ,beacontime[4],beacontime[5],gw_config['gw_id'])
+    payload='{"time":"'+str(beacontime)+'", "gateway":"'+gw_config['gw_id']+'"}'
     print("LoRa Beacon: "+payload)
     if module_config['has_oled']==1:
         oled.fill(0)
