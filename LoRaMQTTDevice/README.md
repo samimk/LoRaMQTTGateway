@@ -5,7 +5,7 @@ This application implements a demo LoRa device, which periodically sends a messa
 
 The **LoRaMQTTDevice** can transmit periodically in two ways:
 - each *xmit_period* seconds,
-- in predefined slot after receiving a beacon from **LoRaMQTTGateway**.
+- in predefined slot after receiving a beacon from certain gateway.
 
 ### Configuration
 
