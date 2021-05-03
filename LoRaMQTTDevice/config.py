@@ -18,7 +18,9 @@
 dev_config = {
     'dev_topic':'ENTER_DEVICE_TOPIC',
     'dev_id':'ENTER_DEVICE_ID',
-    'xmit_period':21    # Transmit to LoRa everx xmit_period (in seconds)
+    'xmit_period':21,   # Transmit to LoRa every xmit_period (in seconds)
+    'xmit_slot':0,      # Transmit slot (in seconds) - if 0 transmit immediately
+    'xmit_gw':'ENTER_GATEWAY_ID'   # Waiting beacon from gateway, when slots are used
 }
 
 # Module config
