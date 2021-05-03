@@ -6,7 +6,7 @@ This application provides basic gateway functionality between LoRa devices and M
 ### Motivation
 LoRaWAN is surely a large-scale solution for integrating wireless devices into an IoT application. That made LoRaWAN infractructure too large and too complex for smaller applications, with relatively small number of wireless devices (less than a hundred). **LoRaMQTTGateway** is intended for such applications (such as smart home or similar). Since it exposes a widely-used MQTT to wireless devices, their integration into other existing systems should be very easy. 
 
-Currently, no data encryption is used, having in mind that in most such cases data traffic is closed in a local network. Nevertheless, data encryption is one of the first features to be added to the LoRaMQTTGateway.
+Currently, no data encryption is used, having in mind that in most such cases data traffic is closed in a local network. Nevertheless, data encryption is one of the first features to be added to the **LoRaMQTTGateway**.
 
 ### LoRa messages and MQTT messages
 
@@ -36,7 +36,7 @@ Message received from MQTT broker is transmitted to LoRa as JSON string:
 
 The *topic_for_LoRa* is formed as the topic of the message received from MQTT broker, without the root *gw_topic*. The *string_containing_message_from_MQTT_broker* can also be formatted using JSON.
 
-The application can be configured to send a beacon to LoRa periodically. The beacon message contains timestamp and *gw_id*. This beacon can be used by devices to determine a time slot after reception of beacon in which a message should be transmitted (see implementation of LoRaMQTTDevice).
+The application can be configured to send a beacon to LoRa periodically. The beacon message contains timestamp and *gw_id*. This beacon can be used by devices to determine a time slot after reception of beacon in which a message should be transmitted (see implementation of **LoRaMQTTDevice**).
 
 Additionally, blacklists of root topics for MQTT and for LoRa can be specified in config.py. 
 
@@ -44,7 +44,7 @@ If a root topic is blacklisted for MQTT, the message will not be forwareded to t
 
 If a root topic is blacklisted for LoRa, the message will not be forwarded to LoRa. This can be used, among others, to prevent bouncing back to LoRa devices those messages, which have been forwarded to the broker.
 
-If local root topic is defined, such messages will not be forwarded to the broker, but retransmitted to LoRa. In this way, the *LoRaMQTTGateway* can be used as relay between LoRa devices in certain area.
+If local root topic is defined, such messages will not be forwarded to the broker, but retransmitted to LoRa. In this way, the **LoRaMQTTGateway** can be used as relay between LoRa devices in certain area.
 
 ### Configuration
 
