@@ -36,7 +36,10 @@ mqtt_config = {
 gw_config = {
     'gw_topic':'lora',  # Enter root topic for lora MQTT messages
     'gw_id':'gateway1', # Enter LoRa Gateway ID as string
-    'beacon_min': 1  # 0 - no beacon, >0 - beacon interval (in minutes)
+    'beacon_min': 1,  # 0 - no beacon, >0 - beacon interval (in minutes)
+    'no_mqtt': ['ENTER_ROOT_TOPIC_NO_MQTT'], # root topics from LoRa which will not be forwareded to broker
+    'no_lora': ['ENTER_ROOT_TOPIC_NO_LORA'],  # root topics from broker which will not be forwarded to LoRa
+    'local': 'local' # root topic for retransmission to LoRa
 }
 
 # Module config
